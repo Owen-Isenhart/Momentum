@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 use std::{
     fs,
     io,
+    path::PathBuf, // Added this import
     time::{Duration, Instant},
 };
 
@@ -188,7 +189,9 @@ impl App {
     // --- PERSISTENCE ---
 
     fn load_config() -> KeyBindings {
-        if let Ok(content) = fs::read_to_string(CONFIG_FILE) {
+        // Corrected: Uses get_app_file_path defined outside this block
+        let path = get_app_file_path(CONFIG_FILE); 
+        if let Ok(content) = fs::read_to_string(path) {
             serde_json::from_str(&content).unwrap_or_default()
         } else {
             KeyBindings::default()
@@ -197,16 +200,19 @@ impl App {
 
     fn save_config(&self) {
         if let Ok(json) = serde_json::to_string_pretty(&self.config) {
-            let _ = fs::write(CONFIG_FILE, json);
+            let path = get_app_file_path(CONFIG_FILE);
+            let _ = fs::write(path, json);
         }
     }
 
     fn load_all_runs() -> Vec<RunData> {
-        if let Ok(content) = fs::read_to_string(SPLITS_FILE) {
+        let path = get_app_file_path(SPLITS_FILE);
+        if let Ok(content) = fs::read_to_string(path) {
             if let Ok(splits_file) = serde_json::from_str::<SplitsFile>(&content) {
                 return splits_file.runs;
             }
         }
+        // Corrected: Fallback return value is now present
         vec![RunData {
             run_name: "Default Run".to_string(),
             splits: App::default_splits(),
@@ -218,7 +224,8 @@ impl App {
             runs: self.all_runs.clone(),
         };
         if let Ok(json) = serde_json::to_string_pretty(&splits_file) {
-            let _ = fs::write(SPLITS_FILE, json);
+            let path = get_app_file_path(SPLITS_FILE);
+            let _ = fs::write(path, json);
         }
     }
 
@@ -386,6 +393,23 @@ impl App {
 }
 
 // --- UTILS ---
+
+// Added: Function logic moved outside impl App so it's accessible everywhere
+fn get_app_file_path(filename: &str) -> PathBuf {
+    let home_dir = std::env::var("HOME")
+        .or_else(|_| std::env::var("USERPROFILE"))
+        .expect("Could not determine home directory");
+
+    let mut path = PathBuf::from(home_dir);
+    path.push(".momentum");
+
+    if !path.exists() {
+        let _ = fs::create_dir_all(&path);
+    }
+
+    path.push(filename);
+    path
+}
 
 fn get_big_text_lines(text: &str) -> Vec<String> {
     let mut rows = vec![String::new(); 5];
@@ -609,6 +633,7 @@ fn draw_timer(f: &mut ratatui::Frame, app: &App, area: Rect) {
     );
     f.render_widget(Paragraph::new(help_txt).alignment(Alignment::Center).style(Style::default().fg(Color::Gray)), chunks[2]);
 }
+
 fn draw_settings(f: &mut ratatui::Frame, app: &App, area: Rect) {
     let settings_items = vec![
         ("Split Key", app.config.split.to_string()),
