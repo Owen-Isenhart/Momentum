@@ -1,0 +1,49 @@
+{
+  "runs": [
+    {
+      "run_name": "Default Run",
+      "splits": [
+        {
+          "name": "Bullet Match",
+          "pb_time": 1623,
+          "current_time": 1623
+        },
+        {
+          "name": "Blitz Match",
+          "pb_time": 2225,
+          "current_time": 2225
+        },
+        {
+          "name": "Rapid Match",
+          "pb_time": 2774,
+          "current_time": 2774
+        },
+        {
+          "name": "Poker Hand 1",
+          "pb_time": 3199,
+          "current_time": 3199
+        },
+        {
+          "name": "Poker Hand 2",
+          "pb_time": 3199,
+          "current_time": 3199
+        },
+        {
+          "name": "Poker Hand 3",
+          "pb_time": 3199,
+          "current_time": 3199
+        },
+        {
+          "name": "CSES Problem",
+          "pb_time": 3199,
+          "current_time": 3199
+        },
+        {
+          "name": "Codeforces Problem",
+          "pb_time": 3199,
+          "current_time": 3199
+        }
+      ]
+    }
+  ]
+}

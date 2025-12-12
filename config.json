@@ -1,0 +1,9 @@
+{
+  "split": "PageUp",
+  "reset": "End",
+  "pause": "PageDown",
+  "quit": {
+    "Char": "q"
+  },
+  "toggle_view": "Tab"
+}
